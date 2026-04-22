@@ -1,0 +1,35 @@
+#!/usr/bin/make -f
+
+# Default maintainer info (can be overridden by environment)
+MAINTAINER_NAME ?= "Your Name"
+MAINTAINER_EMAIL ?= "your.email@example.com"
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	# 1. Extract CRX metadata (adjust paths/commands as needed)
+	CRX_NAME=$$(python3 debian/scripts/crx_reader.py --name /path/to/decoded.crx)
+	CRX_ID=$$(python3 debian/scripts/crx_reader.py --id /path/to/decoded.crx)
+	CRX_VERSION=$$(python3 debian/scripts/crx_reader.py --version /path/to/decoded.crx)
+
+	# 2. Define maintainer and build date
+	MAINTAINER="$(MAINTAINER_NAME) <$(MAINTAINER_EMAIL)>"
+	BUILD_DATE=$$(date -R)  # Generates RFC 2822 date format
+
+	# 3. Generate debian/changelog from the template
+	sed -e "s|@PACKAGE@|crx2deb|g" \
+	    -e "s|@VERSION@|$$CRX_VERSION|g" \
+	    -e "s|@CRX_NAME@|$$CRX_NAME|g" \
+	    -e "s|@CRX_ID@|$$CRX_ID|g" \
+	    -e "s|@MAINTAINER_NAME@|$(MAINTAINER_NAME)|g" \
+	    -e "s|@MAINTAINER_EMAIL@|$(MAINTAINER_EMAIL)|g" \
+	    -e "s|@BUILD_DATE@|$$BUILD_DATE|g" \
+	    debian/changelog.in > debian/changelog
+
+	dh_auto_configure
+
+# Clean up generated file to keep source tree clean
+override_dh_clean:
+	rm -f debian/changelog
+	dh_clean

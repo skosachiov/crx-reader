@@ -1,0 +1,17 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: @CRX_NAME@
+Source: https://example.com/extension
+
+Files: *
+Copyright: @CRX_COPYRIGHT_YEARS@ @CRX_AUTHOR@
+License: @CRX_LICENSE@
+
+Files: debian/*
+Copyright: @YEAR@ Debian Maintainer <email@example.com>
+License: GPL-2+
+
+License: @CRX_LICENSE@
+ [Full license text for the CRX extension's license]
+
+License: GPL-2+
+ [Full text of the GPL-2 license]
