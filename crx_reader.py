@@ -10,7 +10,15 @@ from pathlib import Path
 # Protobuf message definitions (replicated from crx3_pb2.py)
 from google.protobuf import descriptor_pool, message_factory
 
-_pb2_serialized = b'\n\ncrx3.proto\x12\x08crx_file\"\xb7\x01\n\rCrxFileHeader\x12\x35\n\x0fsha256_with_rsa\x18\x02 \x03(\x0b2\x1c.crx_file.AsymmetricKeyProof\x12\x37\n\x11sha256_with_ecdsa\x18\x03 \x03(\x0b2\x1c.crx_file.AsymmetricKeyProof\x12\x19\n\x11verified_contents\x18\x04 \x01(\x0c\x12\x1b\n\x12signed_header_data\x18\x90N \x01(\x0c\";\n\x12AsymmetricKeyProof\x12\x12\n\npublic_key\x18\x01 \x01(\x0c\x12\x11\n\tsignature\x18\x02 \x01(\x0c\"\x1c\n\nSignedData\x12\x0e\n\x06crx_id\x18\x01 \x01(\x0cB\x02H\x03'
+_pb2_serialized = (
+    b'\n\ncrx3.proto\x12\x08crx_file\"\xb7\x01\n\rCrxFileHeader\x12\x35\n\x0f'
+    b'sha256_with_rsa\x18\x02 \x03(\x0b2\x1c.crx_file.AsymmetricKeyProof\x12'
+    b'\x37\n\x11sha256_with_ecdsa\x18\x03 \x03(\x0b2\x1c.crx_file.AsymmetricKeyProof'
+    b'\x12\x19\n\x11verified_contents\x18\x04 \x01(\x0c\x12\x1b\n\x12signed_header_data'
+    b'\x18\x90N \x01(\x0c\";\n\x12AsymmetricKeyProof\x12\x12\n\npublic_key\x18\x01 \x01'
+    b'(\x0c\x12\x11\n\tsignature\x18\x02 \x01(\x0c\"\x1c\n\nSignedData\x12\x0e\n\x06'
+    b'crx_id\x18\x01 \x01(\x0cB\x02H\x03'
+)
 
 pool = descriptor_pool.DescriptorPool()
 pool.AddSerializedFile(_pb2_serialized)
