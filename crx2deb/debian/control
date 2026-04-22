@@ -1,0 +1,17 @@
+Source: chromium-extension-@CRX_ID@
+Section: web
+Priority: optional
+Maintainer: @MAINTAINER_NAME@ <@MAINTAINER_EMAIL@>
+Build-Depends: debhelper (>= 10), python3, python3-protobuf
+Standards-Version: 4.5.0
+Homepage: https://example.com/extension
+
+Package: chromium-extension-@CRX_ID@
+Architecture: all
+Depends: ${misc:Depends}, chromium | chromium-browser | google-chrome-stable
+Description: Chromium extension: @CRX_NAME@
+ This package installs the "@CRX_NAME@" extension system‑wide for Chromium
+ and Google Chrome.
+ .
+ Extension ID: @CRX_ID@
+ Version: @CRX_VERSION@

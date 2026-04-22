@@ -1,35 +1,75 @@
 #!/usr/bin/make -f
 
-# Default maintainer info (can be overridden by environment)
 MAINTAINER_NAME ?= "Your Name"
 MAINTAINER_EMAIL ?= "your.email@example.com"
+PACKAGE_PREFIX ?= chromium-extension
 
 %:
 	dh $@
 
 override_dh_auto_configure:
-	# 1. Extract CRX metadata (adjust paths/commands as needed)
-	CRX_NAME=$$(python3 debian/scripts/crx_reader.py --name /path/to/decoded.crx)
-	CRX_ID=$$(python3 debian/scripts/crx_reader.py --id /path/to/decoded.crx)
-	CRX_VERSION=$$(python3 debian/scripts/crx_reader.py --version /path/to/decoded.crx)
+	@echo "==> Locating source file in src/..."
+	SRC_DIR=$(CURDIR)/src
+	SRC_FILES=$$(find "$$SRC_DIR" -maxdepth 1 -type f ! -name ".*" | wc -l)
+	if [ "$$SRC_FILES" -ne 1 ]; then \
+		echo "Error: src/ must contain exactly one file (found $$SRC_FILES)"; \
+		exit 1; \
+	fi
+	CRX_BASE64=$$(find "$$SRC_DIR" -maxdepth 1 -type f ! -name ".*")
 
-	# 2. Define maintainer and build date
-	MAINTAINER="$(MAINTAINER_NAME) <$(MAINTAINER_EMAIL)>"
-	BUILD_DATE=$$(date -R)  # Generates RFC 2822 date format
+	@echo "==> Decoding CRX from $$(basename $$CRX_BASE64)..."
+	mkdir -p $(CURDIR)/tmp
+	base64 -d "$$CRX_BASE64" > $(CURDIR)/tmp/extension.crx
 
-	# 3. Generate debian/changelog from the template
-	sed -e "s|@PACKAGE@|crx2deb|g" \
-	    -e "s|@VERSION@|$$CRX_VERSION|g" \
-	    -e "s|@CRX_NAME@|$$CRX_NAME|g" \
-	    -e "s|@CRX_ID@|$$CRX_ID|g" \
+	@echo "==> Extracting CRX metadata..."
+	$(eval CRX_NAME := $(shell python3 $(CURDIR)/debian/scripts/crx_reader.py --name $(CURDIR)/tmp/extension.crx))
+	$(eval CRX_ID := $(shell python3 $(CURDIR)/debian/scripts/crx_reader.py --id $(CURDIR)/tmp/extension.crx))
+	$(eval CRX_VERSION := $(shell python3 $(CURDIR)/debian/scripts/crx_reader.py --version $(CURDIR)/tmp/extension.crx))
+
+	@echo "Extension name: $(CRX_NAME)"
+	@echo "Extension ID:   $(CRX_ID)"
+	@echo "Version:        $(CRX_VERSION)"
+
+	python3 $(CURDIR)/debian/scripts/crx_reader.py --xml $(CURDIR)/tmp/extension.crx > $(CURDIR)/tmp/update.xml
+
+	$(eval MAINTAINER := $(MAINTAINER_NAME) <$(MAINTAINER_EMAIL)>)
+	$(eval BUILD_DATE := $(shell date -R))
+
+	# Generate debian/changelog (overwrites placeholder)
+	sed -e "s|@PACKAGE@|$(PACKAGE_PREFIX)-$(CRX_ID)|g" \
+	    -e "s|@VERSION@|$(CRX_VERSION)|g" \
+	    -e "s|@CRX_NAME@|$(CRX_NAME)|g" \
+	    -e "s|@CRX_ID@|$(CRX_ID)|g" \
 	    -e "s|@MAINTAINER_NAME@|$(MAINTAINER_NAME)|g" \
 	    -e "s|@MAINTAINER_EMAIL@|$(MAINTAINER_EMAIL)|g" \
 	    -e "s|@BUILD_DATE@|$$BUILD_DATE|g" \
 	    debian/changelog.in > debian/changelog
 
+	# Generate debian/copyright
+	sed -e "s|@CRX_NAME@|$(CRX_NAME)|g" \
+	    -e "s|@CRX_COPYRIGHT_YEARS@|$(shell date +%Y)|g" \
+	    -e "s|@CRX_AUTHOR@|$(MAINTAINER_NAME)|g" \
+	    -e "s|@CRX_LICENSE@|unknown|g" \
+	    -e "s|@YEAR@|$(shell date +%Y)|g" \
+	    debian/copyright.in > debian/copyright
+
+	# Create install file
+	echo "tmp/extension.crx usr/share/chromium/extensions/$(CRX_ID).crx" > debian/install
+	echo "tmp/update.xml usr/share/chromium/extensions/$(CRX_ID).xml" >> debian/install
+	echo "debian/policy.json etc/chromium/policies/managed/$(PACKAGE_PREFIX)-$(CRX_ID).json" >> debian/install
+
+	# Create policy JSON
+	echo '{' > debian/policy.json
+	echo '  "ExtensionInstallForcelist": [' >> debian/policy.json
+	echo '    "$(CRX_ID);file:///usr/share/chromium/extensions/$(CRX_ID).xml"' >> debian/policy.json
+	echo '  ]' >> debian/policy.json
+	echo '}' >> debian/policy.json
+
 	dh_auto_configure
 
-# Clean up generated file to keep source tree clean
 override_dh_clean:
-	rm -f debian/changelog
+	rm -rf $(CURDIR)/tmp
+	rm -f debian/copyright debian/install debian/policy.json
+	# Restore placeholder changelog so the source tree remains buildable
+	cp debian/changelog.placeholder debian/changelog
 	dh_clean
