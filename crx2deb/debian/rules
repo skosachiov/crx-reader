@@ -1,8 +1,11 @@
 #!/usr/bin/make -f
 
+# Default maintainer info (override with environment)
 MAINTAINER_NAME ?= "Your Name"
 MAINTAINER_EMAIL ?= "your.email@example.com"
-PACKAGE_PREFIX ?= chromium-extension
+
+# Source package name (must match debian/control)
+SRC_PACKAGE = chromium-extension-custom
 
 %:
 	dh $@
@@ -30,13 +33,15 @@ override_dh_auto_configure:
 	@echo "Extension ID:   $(CRX_ID)"
 	@echo "Version:        $(CRX_VERSION)"
 
+	# Generate update manifest XML
 	python3 $(CURDIR)/debian/scripts/crx_reader.py --xml $(CURDIR)/tmp/extension.crx > $(CURDIR)/tmp/update.xml
 
+	# Prepare maintainer and date for templates
 	$(eval MAINTAINER := $(MAINTAINER_NAME) <$(MAINTAINER_EMAIL)>)
 	$(eval BUILD_DATE := $(shell date -R))
 
 	# Generate debian/changelog (overwrites placeholder)
-	sed -e "s|@PACKAGE@|$(PACKAGE_PREFIX)-$(CRX_ID)|g" \
+	sed -e "s|@PACKAGE@|$(SRC_PACKAGE)|g" \
 	    -e "s|@VERSION@|$(CRX_VERSION)|g" \
 	    -e "s|@CRX_NAME@|$(CRX_NAME)|g" \
 	    -e "s|@CRX_ID@|$(CRX_ID)|g" \
@@ -56,9 +61,9 @@ override_dh_auto_configure:
 	# Create install file
 	echo "tmp/extension.crx usr/share/chromium/extensions/$(CRX_ID).crx" > debian/install
 	echo "tmp/update.xml usr/share/chromium/extensions/$(CRX_ID).xml" >> debian/install
-	echo "debian/policy.json etc/chromium/policies/managed/$(PACKAGE_PREFIX)-$(CRX_ID).json" >> debian/install
+	echo "debian/policy.json etc/chromium/policies/managed/$(SRC_PACKAGE)-$(CRX_ID).json" >> debian/install
 
-	# Create policy JSON
+	# Create Chromium force‑install policy JSON
 	echo '{' > debian/policy.json
 	echo '  "ExtensionInstallForcelist": [' >> debian/policy.json
 	echo '    "$(CRX_ID);file:///usr/share/chromium/extensions/$(CRX_ID).xml"' >> debian/policy.json
@@ -67,9 +72,13 @@ override_dh_auto_configure:
 
 	dh_auto_configure
 
+override_dh_gencontrol:
+	dh_gencontrol -- -Vcrx-id=$(CRX_ID) -Vcrx-version=$(CRX_VERSION) -Vcrx-name="$(CRX_NAME)"
+
 override_dh_clean:
 	rm -rf $(CURDIR)/tmp
 	rm -f debian/copyright debian/install debian/policy.json
 	# Restore placeholder changelog so the source tree remains buildable
 	cp debian/changelog.placeholder debian/changelog
 	dh_clean
+	
