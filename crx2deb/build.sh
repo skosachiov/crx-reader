@@ -28,8 +28,15 @@ sed -e "s/@PACKAGE@/chromium-extension-custom/g" \
     -e "s/@BUILD_DATE@/$(date -R)/g" \
     debian/changelog.in > debian/changelog
 
-# Also generate debian/control if you use dynamic package name (see previous advice)
-# sed ... debian/control.in > debian/control
+# Generate debian/control from control.in
+sed -e "s/@CRX_ID@/$CRX_ID/g" \
+    -e "s/@CRX_NAME@/$CRX_NAME/g" \
+    -e "s/@CRX_VERSION@/$CRX_VERSION/g" \
+    debian/control.in > debian/control
+
+# Optionally generate debian/copyright from copyright.in
+# (Add appropriate sed substitutions for copyright years, author, license)
+# sed ... debian/copyright.in > debian/copyright
 
 # Now build the package
 dpkg-buildpackage -us -uc -b
