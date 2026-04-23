@@ -2,6 +2,8 @@
 set -e
 
 EXTENSION_PREFIX="chromium-extension"
+POLICIES_FILE="/etc/opt/chrome/policies/managed/extension_policy.json"
+EXTENSION_DIR="usr/share/chromium/extensions/"
 MAINTAINER_NAME="Your Name"
 MAINTAINER_EMAIL="your.email@example.com"
 
@@ -27,6 +29,8 @@ echo "Extension: $CRX_NAME ($CRX_ID) version $CRX_VERSION"
 
 cat > debian/vars.mk <<EOF
 EXTENSION_PREFIX = $EXTENSION_PREFIX
+EXTENSION_DIR = $EXTENSION_DIR
+POLICIES_FILE = $POLICIES_FILE
 CRX_NAME = $CRX_NAME
 CRX_ID = $CRX_ID
 CRX_VERSION = $CRX_VERSION
