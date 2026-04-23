@@ -5,3 +5,4 @@ Extract Chrome extension ID, name, version, and XML update manifest from CRX3 fi
 ## Requirements
 
 - Python 3.6+
+- apt install python3-protobuf python3-unidecode

@@ -6,6 +6,8 @@ import sys
 import zipfile
 import tempfile
 from pathlib import Path
+import re
+from unidecode import unidecode
 
 # Protobuf message definitions (replicated from crx3_pb2.py)
 from google.protobuf import descriptor_pool, message_factory
@@ -34,8 +36,17 @@ SignedData = message_factory.MessageFactory(pool).GetPrototype(
     pool.FindMessageTypeByName('crx_file.SignedData')
 )
 
+def sanitize_debian_package_name(name):
+    name = unidecode(str(name).lower())
+    name = re.sub(r'[^a-z0-9+\-.]+', '-', name.replace(' ', '-').replace('_', '-'))
+    name = re.sub(r'[-.]+', '-', name).strip('-')
+    if not name or not name[0].isalnum():
+        name = 'pkg-' + name.lstrip('-')
+    if not name:
+        name = 'unknown-package'
+    return name[:64].rstrip('-.')
 
-def read_crx_v3(filepath):
+def read_crx_v3(filepath, sanitize = False):
     """Read CRX v3 file and extract extension info."""
     with open(filepath, 'rb') as f:
         magic = f.read(4)
@@ -81,6 +92,7 @@ def read_crx_v3(filepath):
             raise ValueError("Could not find manifest.json")
 
         name = manifest.get('name', 'Unknown')
+        if sanitize: name = sanitize_debian_package_name(name)
         version_str = manifest.get('version', 'Unknown')
 
         return {
@@ -141,6 +153,7 @@ def main():
     parser.add_argument('--name', action='store_true', help='Output extension name only')
     parser.add_argument('--xml', action='store_true', help='Output XML update manifest only')
     parser.add_argument('--json', action='store_true', help='Output JSON object with all fields')
+    parser.add_argument('--sanitize', action='store_true', help='Sanitize package name')
 
     args = parser.parse_args()
 
@@ -150,7 +163,7 @@ def main():
         sys.exit(1)
 
     try:
-        info = read_crx_v3(crx_path)
+        info = read_crx_v3(crx_path, args.sanitize)
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)

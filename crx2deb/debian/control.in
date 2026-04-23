@@ -1,11 +1,12 @@
-Source: chromium-extension-custom
+Source: @EXTENSION_PREFIX@-@CRX_NAME@
+Version: @CRX_VERSION@ 
 Section: web
 Priority: optional
-Maintainer: Your Name <your.email@example.com>
+Maintainer: @MAINTAINER_NAME@ <@MAINTAINER_EMAIL@>
 Build-Depends: debhelper (>= 10), python3-protobuf
 Standards-Version: 4.5.0
 
-Package: chromium-extension-@CRX_ID@
+Package: @EXTENSION_PREFIX@-@CRX_NAME@
 Architecture: all
 Depends: ${misc:Depends}
 Description: @CRX_NAME@
