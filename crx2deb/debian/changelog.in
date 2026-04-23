@@ -1,5 +1,5 @@
-@PACKAGE@ (@VERSION@-1) unstable; urgency=medium
+@EXTENSION_PREFIX@-@PACKAGE@ (@VERSION@) unstable; urgency=medium
 
   * Automatically generated package for @CRX_NAME@ (@CRX_ID@)
 
- -- @MAINTAINER_NAME@ <@MAINTAINER_EMAIL@>  @BUILD_DATE@
+ -- @MAINTAINER_NAME@ <@MAINTAINER_EMAIL@> @BUILD_DATE@

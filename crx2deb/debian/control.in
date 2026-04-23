@@ -1,5 +1,4 @@
 Source: @EXTENSION_PREFIX@-@CRX_NAME@
-Version: @CRX_VERSION@ 
 Section: web
 Priority: optional
 Maintainer: @MAINTAINER_NAME@ <@MAINTAINER_EMAIL@>

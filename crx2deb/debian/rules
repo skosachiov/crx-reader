@@ -1,52 +1,26 @@
 #!/usr/bin/make -f
 
-# Default maintainer info
-MAINTAINER_NAME ?= Your Name
-MAINTAINER_EMAIL ?= your.email@example.com
+-include debian/vars.mk
+
+build: debian/vars.mk
+
+debian/vars.mk:
+	./build.sh
 
 %:
 	dh $@
 
 override_dh_auto_configure:
-	@# Decode CRX and extract metadata
-	@SRC_FILE=$$(find $(CURDIR)/src -maxdepth 1 -type f ! -name ".*" | head -1); \
-	if [ -z "$$SRC_FILE" ]; then \
-		echo "Error: No base64 file found in src/"; exit 1; \
-	fi; \
-	echo "Decoding $$SRC_FILE ..."; \
-	mkdir -p $(CURDIR)/debian/tmp; \
-	base64 -d "$$SRC_FILE" > $(CURDIR)/debian/tmp/extension.crx; \
-	CRX_NAME=$$(python3 $(CURDIR)/debian/scripts/crx_reader.py --name $(CURDIR)/debian/tmp/extension.crx); \
-	CRX_ID=$$(python3 $(CURDIR)/debian/scripts/crx_reader.py --id $(CURDIR)/debian/tmp/extension.crx); \
-	CRX_VERSION=$$(python3 $(CURDIR)/debian/scripts/crx_reader.py --version $(CURDIR)/debian/tmp/extension.crx); \
-	BUILD_DATE=$$(date -R); \
-	echo "Extension: $$CRX_NAME ($$CRX_ID) version $$CRX_VERSION"; \
-	\
-	sed -e 's|@PACKAGE@|chromium-extension-custom|g' \
-	    -e "s|@VERSION@|$$CRX_VERSION|g" \
-	    -e "s|@CRX_NAME@|$$CRX_NAME|g" \
-	    -e "s|@CRX_ID@|$$CRX_ID|g" \
-	    -e "s|@MAINTAINER_NAME@|$(MAINTAINER_NAME)|g" \
-	    -e "s|@MAINTAINER_EMAIL@|$(MAINTAINER_EMAIL)|g" \
-	    -e "s|@BUILD_DATE@|$$BUILD_DATE|g" \
-	    debian/changelog.in > debian/changelog; \
-	\
-	sed -e "s|@CRX_ID@|$$CRX_ID|g" \
-	    -e "s|@CRX_NAME@|$$CRX_NAME|g" \
-	    -e "s|@CRX_VERSION@|$$CRX_VERSION|g" \
-	    debian/control.in > debian/control; \
-	\
-	echo "usr/share/chromium/extensions/$$CRX_ID /usr/share/chromium/extensions" > debian/install
+	echo "Extension: $(CRX_NAME) $(CRX_ID) version $(CRX_VERSION)"
 
-override_dh_auto_build:
-	$(eval CRX_ID := $(shell grep '^Package:' debian/control | cut -d' ' -f2 | sed 's/chromium-extension-//'))
-	mkdir -p debian/chromium-extension-$(CRX_ID)/usr/share/chromium/extensions/$(CRX_ID)
-	unzip -q debian/tmp/extension.crx -d debian/chromium-extension-$(CRX_ID)/usr/share/chromium/extensions/$(CRX_ID)
+override_dh_auto_install:
+	echo "tmp/$(CRX_NAME).crx usr/share/chromium/extensions/$(CRX_NAME).crx" > debian/install
+	dh_install
 
 override_dh_clean:
-	dh_clean
-	rm -rf $(CURDIR)/debian/tmp
-	rm -f debian/install debian/policy.json
+	# dh_clean
+	# rm -rf $(CURDIR)/debian/tmp
+	rm -f debian/install debian/policy.json debian/vars.mk
 	# Restore placeholder changelog (if you want the source to be pristine)
 	cp debian/changelog.placeholder debian/changelog
 	# Optionally, restore debian/control to a dummy template to keep the source tree clean

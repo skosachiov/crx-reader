@@ -1,3 +1,5 @@
 *.crx
 chromium-extension-*
 tmp/
+debhelper-build-stamp
+vars.mk
