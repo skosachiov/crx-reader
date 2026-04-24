@@ -1,0 +1,12 @@
+Source: chromium-extension-template
+Section: web
+Priority: optional
+Maintainer: Your Name <your.email@example.com>
+Build-Depends: debhelper (>= 10), python3-protobuf
+Standards-Version: 4.5.0
+
+Package: chromium-extension-template
+Architecture: all
+Depends: ${misc:Depends}
+Description: template
+ This package installs the Chromium extension "template" (version 1.1.1).
