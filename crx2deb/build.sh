@@ -31,34 +31,18 @@ sed -i "s|$UPDATECHECK_TEMPLATE|file:///$EXTENSION_DIR/$CRX_NAME.crx|" tmp/$(bas
 
 echo "Extension: $CRX_NAME ($CRX_ID) version $CRX_VERSION"
 
-cat > debian/vars.mk <<EOF
-EXTENSION_PREFIX = $EXTENSION_PREFIX
-EXTENSION_DIR = $EXTENSION_DIR
-POLICIES_FILE = $POLICIES_FILE
-CRX_NAME = $CRX_NAME
-CRX_ID = $CRX_ID
-CRX_VERSION = $CRX_VERSION
-MAINTAINER_NAME = ${MAINTAINER_NAME:-Your Name}
-MAINTAINER_EMAIL = ${MAINTAINER_EMAIL:-your.email@example.com}
-EOF
+# Export for j2
+export crx_name="$CRX_NAME"
+export crx_version="$CRX_VERSION"
+export crx_id="$CRX_ID"
+export extension_prefix="$EXTENSION_PREFIX"
+export extension_dir="$EXTENSION_DIR"
+export policies_file="$POLICIES_FILE"
+export maintainer_name="$MAINTAINER_NAME"
+export maintainer_email="$MAINTAINER_EMAIL"
+export build_date="$BUILD_DATE"
 
-# Generate debian/changelog from template
-sed -e "s/@PACKAGE@/$CRX_NAME/g" \
-    -e "s/@VERSION@/$CRX_VERSION/g" \
-    -e "s/@CRX_NAME@/$CRX_NAME/g" \
-    -e "s/@CRX_ID@/$CRX_ID/g" \
-    -e "s/@EXTENSION_PREFIX@/$EXTENSION_PREFIX/g" \
-    -e "s/@MAINTAINER_NAME@/${MAINTAINER_NAME:-Your Name}/g" \
-    -e "s/@MAINTAINER_EMAIL@/${MAINTAINER_EMAIL:-your.email@example.com}/g" \
-    -e "s/@BUILD_DATE@/$(date -R)/g" \
-    debian/changelog.in > debian/changelog
-
-# Generate debian/control from control.in
-sed -e "s/@CRX_NAME@/$CRX_NAME/g" \
-    -e "s/@CRX_VERSION@/$CRX_VERSION/g" \
-    -e "s/@EXTENSION_PREFIX@/$EXTENSION_PREFIX/g" \
-    -e "s/@MAINTAINER_NAME@/${MAINTAINER_NAME:-Your Name}/g" \
-    -e "s/@MAINTAINER_EMAIL@/${MAINTAINER_EMAIL:-your.email@example.com}/g" \
-    debian/control.in > debian/control
-
-
+j2 --import-env= debian/changelog.j2 > debian/changelog
+j2 --import-env= debian/control.j2 > debian/control
+j2 --import-env= debian/postinst.j2 > debian/postinst
+j2 --import-env= debian/postrm.j2 > debian/postrm
