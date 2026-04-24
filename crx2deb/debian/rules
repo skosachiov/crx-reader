@@ -22,7 +22,7 @@ override_dh_auto_install:
 		echo '{}' > $(POLICIES_FILE); \
 	fi
 	@# Add extension to forcelist
-	@jq '.ExtensionInstallForcelist += ["$(CRX_ID);file:///$(EXTENSIION_DIR)/$(CRX_NAME)"]' \
+	@jq '.ExtensionInstallForcelist += ["$(CRX_ID);file:///$(EXTENSIION_DIR)/$(CRX_NAME).crx"]' \
 		$(POLICIES_FILE) > $(POLICIES_FILE).tmp && \
 		mv $(POLICIES_FILE).tmp $(POLICIES_FILE)
 	dh_install
