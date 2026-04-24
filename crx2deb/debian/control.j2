@@ -1,0 +1,12 @@
+Source: {{ extension_prefix }}-{{ crx_name }}
+Section: web
+Priority: optional
+Maintainer: {{ maintainer_name }} <{{ maintainer_email }}>
+Build-Depends: debhelper (>= 10), python3-protobuf, python3-unidecode, jq
+Standards-Version: 4.5.0
+
+Package: {{ extension_prefix }}-{{ crx_name }}
+Architecture: all
+Depends: ${misc:Depends}
+Description: {{ crx_name }}
+ This package installs the Chromium extension "{{ crx_name }}" (version {{ crx_version }}).

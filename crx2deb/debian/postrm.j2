@@ -1,0 +1,8 @@
+#!/bin/sh
+set -e
+
+jq '.ExtensionInstallForcelist -= ["{{ crx_id }};file://{{ extension_dir }}/{{ crx_name }}.crx"]' \
+   {{ policies_file }} > {{ policies_file }}.tmp && \
+mv {{ policies_file }}.tmp {{ policies_file }}
+
+exit 0
