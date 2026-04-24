@@ -2,7 +2,7 @@ Source: @EXTENSION_PREFIX@-@CRX_NAME@
 Section: web
 Priority: optional
 Maintainer: @MAINTAINER_NAME@ <@MAINTAINER_EMAIL@>
-Build-Depends: debhelper (>= 10), python3-protobuf
+Build-Depends: debhelper (>= 10), python3-protobuf, python3-unidecode, jq
 Standards-Version: 4.5.0
 
 Package: @EXTENSION_PREFIX@-@CRX_NAME@

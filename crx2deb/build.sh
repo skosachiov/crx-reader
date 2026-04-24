@@ -6,6 +6,7 @@ POLICIES_FILE="/etc/opt/chrome/policies/managed/extension_policy.json"
 EXTENSION_DIR="usr/share/chromium/extensions"
 MAINTAINER_NAME="Your Name"
 MAINTAINER_EMAIL="your.email@example.com"
+UPDATECHECK_TEMPLATE="https://clients2.google.com/service/update2/crx"
 
 # Locate and decode CRX
 SRC_FILE=$(find src -maxdepth 1 -type f ! -name ".*" | head -1)
@@ -23,10 +24,10 @@ CRX_NAME=$(python3 debian/scripts/crx_reader.py --name --sanitize tmp/$CRX_FILE)
 CRX_ID=$(python3 debian/scripts/crx_reader.py --id tmp/$CRX_FILE)
 CRX_VERSION=$(python3 debian/scripts/crx_reader.py --version tmp/$CRX_FILE)
 
-python3 debian/scripts/crx_reader.py --xml tmp/$CRX_FILE > tmp/$(basename $CRX_FILE).xml
-python3 debian/scripts/crx_reader.py --json tmp/$CRX_FILE > tmp/$(basename $CRX_FILE).json
-
 mv tmp/$CRX_FILE tmp/$CRX_NAME.crx
+
+python3 debian/scripts/crx_reader.py --xml tmp/$CRX_FILE > tmp/$(basename $CRX_NAME).xml
+sed -i "s|$UPDATECHECK_TEMPLATE|file:///$EXTENSION_DIR/$CRX_FILE|" tmp/$(basename $CRX_NAME).xml
 
 echo "Extension: $CRX_NAME ($CRX_ID) version $CRX_VERSION"
 
