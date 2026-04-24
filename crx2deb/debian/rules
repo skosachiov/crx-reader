@@ -1,11 +1,10 @@
 #!/usr/bin/make -f
 
--include debian/vars.mk
-
-build: debian/vars.mk
 
 debian/vars.mk:
-	./build.sh
+	debian/gencontrol.sh
+
+-include debian/vars.mk
 
 %:
 	dh $@
@@ -14,6 +13,7 @@ override_dh_auto_configure:
 	echo "Extension: $(CRX_NAME) $(CRX_ID) version $(CRX_VERSION)"
 
 override_dh_gencontrol:
+	debian/gencontrol.sh
 	dh_gencontrol
 
 override_dh_auto_install:
@@ -22,11 +22,9 @@ override_dh_auto_install:
 	dh_install
 
 override_dh_clean:
-	# dh_clean
-	# rm -rf $(CURDIR)/tmp
+	rm -rf $(CURDIR)/tmp
 	rm -f debian/install debian/policy.json debian/vars.mk
-	# Restore placeholder changelog (if you want the source to be pristine)
-	cp debian/changelog.placeholder debian/changelog
-	# Optionally, restore debian/control to a dummy template to keep the source tree clean
-	# cp debian/control.in debian/control
+	cp -f debian/control.placeholder debian/control
+	cp -f debian/changelog.placeholder debian/changelog
+	dh_clean
 

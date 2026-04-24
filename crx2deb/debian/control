@@ -2,7 +2,7 @@ Source: chromium-extension-msg-extname
 Section: web
 Priority: optional
 Maintainer: Your Name <your.email@example.com>
-Build-Depends: debhelper (>= 10), python3-protobuf
+Build-Depends: debhelper (>= 10), python3-protobuf, python3-unidecode, jq
 Standards-Version: 4.5.0
 
 Package: chromium-extension-msg-extname
