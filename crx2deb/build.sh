@@ -26,8 +26,8 @@ CRX_VERSION=$(python3 debian/scripts/crx_reader.py --version tmp/$CRX_FILE)
 
 mv tmp/$CRX_FILE tmp/$CRX_NAME.crx
 
-python3 debian/scripts/crx_reader.py --xml tmp/$CRX_FILE > tmp/$(basename $CRX_NAME).xml
-sed -i "s|$UPDATECHECK_TEMPLATE|file:///$EXTENSION_DIR/$CRX_FILE|" tmp/$(basename $CRX_NAME).xml
+python3 debian/scripts/crx_reader.py --xml tmp/$CRX_NAME > tmp/$(basename $CRX_NAME).xml
+sed -i "s|$UPDATECHECK_TEMPLATE|file:///$EXTENSION_DIR/$CRX_NAME|" tmp/$(basename $CRX_NAME).xml
 
 echo "Extension: $CRX_NAME ($CRX_ID) version $CRX_VERSION"
 
