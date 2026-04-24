@@ -138,9 +138,6 @@ def generate_xml(extension_id, name, version):
     <app appid="{extension_id}">
         <updatecheck codebase="https://clients2.google.com/service/update2/crx"
                      version="{version}"/>
-        <manifest version="{version}">
-            <package name="{name}.crx" hash_sha256="" required_version="{version}"/>
-        </manifest>
     </app>
 </gupdate>'''
 
