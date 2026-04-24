@@ -15,7 +15,7 @@ override_dh_auto_configure:
 
 override_dh_auto_install:
 	echo "tmp/$(CRX_NAME).crx $(EXTENSION_DIR)/$(CRX_NAME).crx" > debian/install
-	echo "tmp/$(CRX_NAME).xml $(EXTENSION_DIR)/$(CRX_NAME).xml" > debian/install
+	echo "tmp/$(CRX_NAME).xml $(EXTENSION_DIR)/$(CRX_NAME).xml" >> debian/install
 	@# Create and update policy file with jq
 	@mkdir -p $(shell dirname $(POLICIES_FILE))
 	@if [ ! -f $(POLICIES_FILE) ]; then \
