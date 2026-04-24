@@ -13,18 +13,12 @@ debian/vars.mk:
 override_dh_auto_configure:
 	echo "Extension: $(CRX_NAME) $(CRX_ID) version $(CRX_VERSION)"
 
+override_dh_gencontrol:
+	dh_gencontrol
+
 override_dh_auto_install:
 	echo "tmp/$(CRX_NAME).crx $(EXTENSION_DIR)/$(CRX_NAME).crx" > debian/install
 	echo "tmp/$(CRX_NAME).xml $(EXTENSION_DIR)/$(CRX_NAME).xml" >> debian/install
-	@# Create and update policy file with jq
-	@mkdir -p $(shell dirname $(POLICIES_FILE))
-	@if [ ! -f $(POLICIES_FILE) ]; then \
-		echo '{}' > $(POLICIES_FILE); \
-	fi
-	@# Add extension to forcelist
-	@jq '.ExtensionInstallForcelist += ["$(CRX_ID);file:///$(EXTENSIION_DIR)/$(CRX_NAME).crx"]' \
-		$(POLICIES_FILE) > $(POLICIES_FILE).tmp && \
-		mv $(POLICIES_FILE).tmp $(POLICIES_FILE)
 	dh_install
 
 override_dh_clean:
