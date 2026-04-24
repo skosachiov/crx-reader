@@ -42,6 +42,8 @@ export maintainer_name="$MAINTAINER_NAME"
 export maintainer_email="$MAINTAINER_EMAIL"
 export build_date="$BUILD_DATE"
 
+j2 --import-env= debian/vars.mk.j2 > debian/vars.mk
+
 j2 --import-env= debian/changelog.j2 > debian/changelog
 j2 --import-env= debian/control.j2 > debian/control
 j2 --import-env= debian/postinst.j2 > debian/postinst
