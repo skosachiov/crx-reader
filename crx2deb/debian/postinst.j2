@@ -14,7 +14,8 @@ if ! jq empty {{ policies_file }} 2>/dev/null; then
     echo '{}' > {{ policies_file }}
 fi
 
-jq '.ExtensionInstallForcelist += ["{{ crx_id }};file:///{{ extension_dir }}/{{ crx_name }}.crx"]' \
+jq --arg entry "{{ crx_id }};file:///{{ extension_dir }}/{{ crx_name }}.crx" \
+   '.ExtensionInstallForcelist += [$entry] | .ExtensionInstallForcelist = unique' \
    {{ policies_file }} > {{ policies_file }}.tmp && \
 mv {{ policies_file }}.tmp {{ policies_file }}
 
