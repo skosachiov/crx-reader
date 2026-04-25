@@ -2,7 +2,7 @@
 set -e
 
 EXTENSION_PREFIX="chromium-extension"
-POLICIES_FILE="/etc/opt/chrome/policies/managed/extension_policy.json"
+POLICIES_FILE="/etc/chromium/policies/managed/extension_policy.json"
 EXTENSION_DIR="usr/share/chromium/extensions"
 MAINTAINER_NAME="Your Name"
 MAINTAINER_EMAIL="your.email@example.com"
