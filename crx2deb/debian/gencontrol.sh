@@ -7,6 +7,7 @@ EXTENSION_DIR="usr/share/chromium/extensions"
 MAINTAINER_NAME="Your Name"
 MAINTAINER_EMAIL="your.email@example.com"
 UPDATECHECK_TEMPLATE="https://clients2.google.com/service/update2/crx"
+LOCAL_SUFFIX="-1"
 
 # Locate and decode CRX
 SRC_FILE=$(find src -maxdepth 1 -type f -name "*.base64" | head -n 1)
@@ -41,6 +42,7 @@ export policies_file="$POLICIES_FILE"
 export maintainer_name="$MAINTAINER_NAME"
 export maintainer_email="$MAINTAINER_EMAIL"
 export build_date="$BUILD_DATE"
+export local_suffix="$LOCAL_SUFFIX"
 
 j2 --import-env= debian/vars.mk.j2 > debian/vars.mk
 
