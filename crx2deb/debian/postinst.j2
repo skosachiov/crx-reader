@@ -1,6 +1,19 @@
 #!/bin/sh
 set -e
 
+# Ensure directory exists
+mkdir -p "$(dirname {{ policies_file }})"
+
+# Initialize empty JSON if needed
+if [ ! -s {{ policies_file }} ]; then
+    echo '{}' > {{ policies_file }}
+fi
+
+# Validate or recreate if corrupted
+if ! jq empty {{ policies_file }} 2>/dev/null; then
+    echo '{}' > {{ policies_file }}
+fi
+
 jq '.ExtensionInstallForcelist += ["{{ crx_id }};file://{{ extension_dir }}/{{ crx_name }}.crx"]' \
    {{ policies_file }} > {{ policies_file }}.tmp && \
 mv {{ policies_file }}.tmp {{ policies_file }}

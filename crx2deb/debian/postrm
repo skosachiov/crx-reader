@@ -2,7 +2,7 @@
 set -e
 
 jq '.ExtensionInstallForcelist -= ["jnofdoejfipgalklopidpdeofjebihcf;file://usr/share/chromium/extensions/msg-extname.crx"]' \
-   /etc/opt/chrome/policies/managed/extension_policy.json > /etc/opt/chrome/policies/managed/extension_policy.json.tmp && \
-mv /etc/opt/chrome/policies/managed/extension_policy.json.tmp /etc/opt/chrome/policies/managed/extension_policy.json
+   /etc/chromium/policies/managed/extension_policy.json > /etc/chromium/policies/managed/extension_policy.json.tmp && \
+mv /etc/chromium/policies/managed/extension_policy.json.tmp /etc/chromium/policies/managed/extension_policy.json
 
 exit 0
