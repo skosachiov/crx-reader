@@ -14,9 +14,17 @@ if ! jq empty {{ policies_file }} 2>/dev/null; then
     echo '{}' > {{ policies_file }}
 fi
 
-jq --arg entry "{{ crx_id }};file:///{{ extension_dir }}/{{ crx_name }}.crx" \
-   '.ExtensionInstallForcelist += [$entry] | .ExtensionInstallForcelist = unique' \
-   {{ policies_file }} > {{ policies_file }}.tmp && \
-mv {{ policies_file }}.tmp {{ policies_file }}
+ENTRY="{{ crx_id }};file:///{{ extension_dir }}/{{ crx_name }}.crx"
+
+# Check if entry already exists
+if ! jq --arg entry "$ENTRY" \
+       '.ExtensionInstallForcelist // [] | index($entry)' \
+       {{ policies_file }} | grep -q true; then
+    # Add the entry
+    jq --arg entry "$ENTRY" \
+       '.ExtensionInstallForcelist = (.ExtensionInstallForcelist // []) + [$entry]' \
+       {{ policies_file }} > {{ policies_file }}.tmp && \
+    mv {{ policies_file }}.tmp {{ policies_file }}
+fi
 
 exit 0
